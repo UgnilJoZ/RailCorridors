@@ -1,4 +1,5 @@
--- Wahrscheinlichkeit für jeden chunk, solche Gänge mit Schienen zu bekommen
+-- „Parameter“
+-- Wahrscheinlichkeit für jeden Chunk, solche Gänge mit Schienen zu bekommen
 local probability_railcaves_in_chunk = 0.3
 local probability_torches_in_segment = 0.5
 
@@ -11,12 +12,6 @@ function InitRandomizer(seeed)
 end
 function nextrandom(min, max)
 	return pr:next() / 32767 * (max - min) + min
-end
-
--- Arithmetisches
-
-function vec_length(v)
-	return (v.x*v.x*v.x + v.y*v.y*v.y + v.z*v.z*v.z) ^ (1/3)
 end
 
 -- Würfel…
@@ -48,6 +43,10 @@ function corridor_part(start_point, segment_vector, segment_count)
 				minetest.set_node({x=p.x+1, y=p.y, z=p.z}, {name="default:fence_wood"})
 				minetest.set_node({x=p.x+1, y=p.y-1, z=p.z}, {name="default:fence_wood"})
 				minetest.set_node({x=p.x-1, y=p.y-1, z=p.z}, {name="default:fence_wood"})
+				if minetest.get_node({x=p.x,y=p.y-2,z=p.z}).name=="air" then
+					minetest.set_node({x=p.x+1, y=p.y-2, z=p.z}, {name="default:fence_wood"})
+					minetest.set_node({x=p.x-1, y=p.y-2, z=p.z}, {name="default:fence_wood"})
+				end
 				if torches then
 					minetest.set_node({x=p.x, y=p.y+1, z=p.z+1}, {name="default:torch", param2=1})
 					minetest.set_node({x=p.x, y=p.y+1, z=p.z-1}, {name="default:torch", param2=1})
@@ -59,6 +58,10 @@ function corridor_part(start_point, segment_vector, segment_count)
 				minetest.set_node({x=p.x, y=p.y, z=p.z-1}, {name="default:fence_wood"})
 				minetest.set_node({x=p.x, y=p.y-1, z=p.z+1}, {name="default:fence_wood"})
 				minetest.set_node({x=p.x, y=p.y-1, z=p.z-1}, {name="default:fence_wood"})
+				if minetest.get_node({x=p.x,y=p.y-2,z=p.z}).name=="air" then
+					minetest.set_node({x=p.x, y=p.y-2, z=p.z+1}, {name="default:fence_wood"})
+					minetest.set_node({x=p.x, y=p.y-2, z=p.z-1}, {name="default:fence_wood"})
+				end
 				if torches then
 					minetest.set_node({x=p.x+1, y=p.y+1, z=p.z}, {name="default:torch", param2=1})
 					minetest.set_node({x=p.x-1, y=p.y+1, z=p.z}, {name="default:torch", param2=1})
@@ -185,18 +188,14 @@ function place_corridors(main_cave_coords, psra)
 	  
 end
 
-print ("[joztest] to register…")
 minetest.register_on_generated(function(minp, maxp, seed)	
 	if not pr_initialized then
 		InitRandomizer(seed)
 	end
 	if maxp.y < 0  and nextrandom(0, 1) < probability_railcaves_in_chunk then
-	
-		--print ("[joztest] modify mapchunk")
 		-- Mittelpunkt berechnen
 		local p = {x=minp.x+(maxp.x-minp.x)/2, y=minp.y+(maxp.y-minp.y)/2, z=minp.z+(maxp.z-minp.z)/2}
-		-- Haupthöhle
+		-- Haupthöhle und alle weiteren
 		place_corridors(p, pr)
 	end
 end)
-
