@@ -199,3 +199,4 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		place_corridors(p, pr)
 	end
 end)
+
