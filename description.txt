@@ -1,3 +1,3 @@
-A first test of a mod that tries to imitate that scurril rail corridors of Minecraft.
+This mod tries to imitate the known rail corridors of Minecraft.
 
-Dies ist eine Testversion eines Mods, der versucht, die aus Minecraft bekannten Minenschächte mit Schienen nachzubilden.
+Diese Modifikation versucht die aus Minecraft bekannten Minenschächte mit Schienen nachzubilden.

@@ -17,7 +17,7 @@ local probability_up_or_down = 0.27
 
 -- Zufallsgenerator / random generator
 local pr
-local pr_initialized = false;
+local pr_initialized = false
 
 function InitRandomizer(seeed)
 	pr = PseudoRandom(seeed)
@@ -31,11 +31,11 @@ end
 -- Cube…
 function Cube(p, radius, node)
 	for zi = p.z-radius, p.z+radius do
-	  for yi = p.y-radius, p.y+radius do
-	    for xi = p.x-radius, p.x+radius do
-		minetest.set_node({x=xi,y=yi,z=zi}, node)
-	    end
-	  end
+		for yi = p.y-radius, p.y+radius do
+			for xi = p.x-radius, p.x+radius do
+				minetest.set_node({x=xi,y=yi,z=zi}, node)
+			end
+		end
 	end
 end
 
@@ -49,50 +49,45 @@ function corridor_part(start_point, segment_vector, segment_count)
 	for segmentindex = 0, segment_count-1 do
 		Cube(p, 1, {name="air"})
 		-- Diese komischen Holz-Konstruktionen
-		-- These funny wood structs
+		-- These strange wood structs
 		if segmentindex % 2 == 1 and segment_vector.y == 0 then
-			minetest.set_node({x=p.x, y=p.y+1, z=p.z}, {name="default:wood"})
+			local dir = {0, 0}
+			local node_wood = {name="default:wood"}
+			local node_fence = {name="default:fence_wood"}
 			if segment_vector.x == 0 and segment_vector.z ~= 0 then
-				minetest.set_node({x=p.x+1, y=p.y+1, z=p.z}, {name="default:wood"})
-				minetest.set_node({x=p.x-1, y=p.y+1, z=p.z}, {name="default:wood"})
-				minetest.set_node({x=p.x-1, y=p.y, z=p.z}, {name="default:fence_wood"})
-				minetest.set_node({x=p.x+1, y=p.y, z=p.z}, {name="default:fence_wood"})
-				minetest.set_node({x=p.x+1, y=p.y-1, z=p.z}, {name="default:fence_wood"})
-				minetest.set_node({x=p.x-1, y=p.y-1, z=p.z}, {name="default:fence_wood"})
-				if minetest.get_node({x=p.x,y=p.y-2,z=p.z}).name=="air" then
-					minetest.set_node({x=p.x+1, y=p.y-2, z=p.z}, {name="default:fence_wood"})
-					minetest.set_node({x=p.x-1, y=p.y-2, z=p.z}, {name="default:fence_wood"})
-				end
-				if torches then
-					minetest.set_node({x=p.x, y=p.y+1, z=p.z+1}, {name="default:torch", param2=1})
-					minetest.set_node({x=p.x, y=p.y+1, z=p.z-1}, {name="default:torch", param2=1})
-				end
+				dir = {1, 0}
 			elseif segment_vector.x ~= 0 and segment_vector.z == 0 then
-				minetest.set_node({x=p.x, y=p.y+1, z=p.z+1}, {name="default:wood"})
-				minetest.set_node({x=p.x, y=p.y+1, z=p.z-1}, {name="default:wood"})
-				minetest.set_node({x=p.x, y=p.y, z=p.z+1}, {name="default:fence_wood"})
-				minetest.set_node({x=p.x, y=p.y, z=p.z-1}, {name="default:fence_wood"})
-				minetest.set_node({x=p.x, y=p.y-1, z=p.z+1}, {name="default:fence_wood"})
-				minetest.set_node({x=p.x, y=p.y-1, z=p.z-1}, {name="default:fence_wood"})
-				if minetest.get_node({x=p.x,y=p.y-2,z=p.z}).name=="air" then
-					minetest.set_node({x=p.x, y=p.y-2, z=p.z+1}, {name="default:fence_wood"})
-					minetest.set_node({x=p.x, y=p.y-2, z=p.z-1}, {name="default:fence_wood"})
-				end
-				if torches then
-					minetest.set_node({x=p.x+1, y=p.y+1, z=p.z}, {name="default:torch", param2=1})
-					minetest.set_node({x=p.x-1, y=p.y+1, z=p.z}, {name="default:torch", param2=1})
-				end
+				dir = {0, 1}
+			end
+			
+			local calc = {
+				p.x+dir[1], p.z+dir[2], -- X and Z, added by direction
+				p.x-dir[1], p.z-dir[2], -- subtracted
+			}
+			minetest.set_node({x=p.x, y=p.y+1, z=p.z}, node_wood)
+			minetest.set_node({x=calc[1], y=p.y+1, z=calc[2]}, node_wood)
+			minetest.set_node({x=calc[1], y=p.y  , z=calc[2]}, node_fence)
+			minetest.set_node({x=calc[1], y=p.y-1, z=calc[2]}, node_fence)
+			
+			minetest.set_node({x=calc[3], y=p.y+1, z=calc[4]}, node_wood)
+			minetest.set_node({x=calc[3], y=p.y  , z=calc[4]}, node_fence)
+			minetest.set_node({x=calc[3], y=p.y-1, z=calc[4]}, node_fence)
+			
+			if minetest.get_node({x=p.x,y=p.y-2,z=p.z}).name=="air" then
+				minetest.set_node({x=calc[1], y=p.y-2, z=calc[2]}, node_fence)
+				minetest.set_node({x=calc[3], y=p.y-2, z=calc[4]}, node_fence)
+			end
+			if torches then
+				minetest.set_node({x=calc[1], y=p.y+1, z=calc[2]}, {name="default:torch", param2=1})
+				minetest.set_node({x=calc[3], y=p.y+1, z=calc[4]}, {name="default:torch", param2=1})
 			end
 		end
+		
 		-- nächster Punkt durch vektoraddition
 		-- next way point
-		p.x = p.x + segment_vector.x
-		p.y = p.y + segment_vector.y
-		p.z = p.z + segment_vector.z
+		p = vector.add(p, segment_vector)
 	end
-	p.x = p.x - segment_vector.x
-	p.y = p.y - segment_vector.y
-	p.z = p.z - segment_vector.z
+	p = vector.subtract(p, segment_vector)
 end
 
 function corridor_func(waypoint, coord, sign, up_or_down, up)
@@ -110,11 +105,11 @@ function corridor_func(waypoint, coord, sign, up_or_down, up)
 		vek.z=segamount
 	end
 	if up_or_down then
-	  if up then
-	    vek.y = 1
-	  else
-	    vek.y = -1
-	  end
+		if up then
+			vek.y = 1
+		else
+			vek.y = -1
+		end
 	end
 	local segcount = pr:next(4,6)
 	corridor_part(waypoint, vek, segcount)
@@ -132,11 +127,11 @@ function corridor_func(waypoint, coord, sign, up_or_down, up)
 		vek.z=segamount
 	end
 	if up_or_down then
-	  if up then
-	    vek.y = 1
-	  else
-	   vek.y = -1
-	  end
+		if up then
+			vek.y = 1
+		else
+			vek.y = -1
+		end
 	end
 	if not up_or_down then
 		segcount = segcount * 2.5
@@ -153,7 +148,7 @@ function corridor_func(waypoint, coord, sign, up_or_down, up)
 	for i=1,segcount do
 		p = {x=waypoint.x+vek.x*i, y=waypoint.y+vek.y*i-1, z=waypoint.z+vek.z*i}
 		if minetest.get_node({x=p.x,y=p.y-1,z=p.z}).name=="air" then
-		  p.y = p.y - 1;
+			p.y = p.y - 1;
 		end
 		minetest.set_node(p, {name = "default:rail"})
 	end
@@ -172,7 +167,7 @@ function start_corridor(waypoint, coord, sign, psra)
 			ud = true
 			up = nextrandom(0, 2) < 1
 		else
-			  ud = false
+			 ud = false
 		end
 		wp = corridor_func(wp,c,s, ud, up)
 		-- coord und sign verändern
@@ -207,14 +202,13 @@ function place_corridors(main_cave_coords, psra)
 	if nextrandom(0, 2) < 1 then
 		start_corridor(main_cave_coords, "z", not zs, psra)
 	end
-	  
 end
 
 minetest.register_on_generated(function(minp, maxp, seed)	
 	if not pr_initialized then
 		InitRandomizer(seed)
 	end
-	if maxp.y < 0  and nextrandom(0, 1) < probability_railcaves_in_chunk then
+	if maxp.y < 0 and nextrandom(0, 1) < probability_railcaves_in_chunk then
 		-- Mittelpunkt berechnen
 		-- Mid point of the chunk
 		local p = {x=minp.x+(maxp.x-minp.x)/2, y=minp.y+(maxp.y-minp.y)/2, z=minp.z+(maxp.z-minp.z)/2}
