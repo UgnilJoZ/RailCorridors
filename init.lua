@@ -1,6 +1,9 @@
 -- „Parameter“
 -- Wahrscheinlichkeit für jeden Chunk, solche Gänge mit Schienen zu bekommen
+-- Probability for every newly generated chunk to get corridors
 local probability_railcaves_in_chunk = 0.3
+-- Wahrsch. für jeden geraden Teil eines Korridors, Holzkonstruktionen ohne Fackeln zu bekommen
+-- Probability for every part of a corridor to be without light
 local probability_torches_in_segment = 0.5
 
 local pr
@@ -15,6 +18,7 @@ function nextrandom(min, max)
 end
 
 -- Würfel…
+-- Cube…
 function Cube(p, radius, node)
 	for zi = p.z-radius, p.z+radius do
 	  for yi = p.y-radius, p.y+radius do
@@ -26,6 +30,7 @@ function Cube(p, radius, node)
 end
 
 -- Gänge mit Schienen
+-- Corridors with rails
 
 function corridor_part(start_point, segment_vector, segment_count)
 	local node
@@ -34,6 +39,7 @@ function corridor_part(start_point, segment_vector, segment_count)
 	for segmentindex = 0, segment_count-1 do
 		Cube(p, 1, {name="air"})
 		-- Diese komischen Holz-Konstruktionen
+		-- These funny wood structs
 		if segmentindex % 2 == 1 and segment_vector.y == 0 then
 			minetest.set_node({x=p.x, y=p.y+1, z=p.z}, {name="default:wood"})
 			if segment_vector.x == 0 and segment_vector.z ~= 0 then
@@ -69,6 +75,7 @@ function corridor_part(start_point, segment_vector, segment_count)
 			end
 		end
 		-- nächster Punkt durch vektoraddition
+		-- next way point
 		p.x = p.x + segment_vector.x
 		p.y = p.y + segment_vector.y
 		p.z = p.z + segment_vector.z
@@ -104,6 +111,7 @@ function corridor_func(waypoint, coord, sign, up_or_down, up)
 	local corridor_vek = {x=vek.x*segcount, y=vek.y*segcount, z=vek.z*segcount}
 
 	-- nachträglich Schienen legen
+	-- after this: rails
 	segamount = 1
 	if sign then
 		segamount = 0-segamount
@@ -131,6 +139,7 @@ function corridor_func(waypoint, coord, sign, up_or_down, up)
 		end
 	end
 	-- Eigentliches Setzen der Schienen
+	-- Actual rails
 	for i=1,segcount do
 		p = {x=waypoint.x+vek.x*i, y=waypoint.y+vek.y*i-1, z=waypoint.z+vek.z*i}
 		if minetest.get_node({x=p.x,y=p.y-1,z=p.z}).name=="air" then
@@ -157,12 +166,14 @@ function start_corridor(waypoint, coord, sign, psra)
 		end
 		wp = corridor_func(wp,c,s, ud, up)
 		-- coord und sign verändern
+		-- randomly change sign and coord
 		if c=="x" then
 			c="z"
 		elseif c=="z" then
 			c="x"
 	 	end;
 		-- Verzweigung?
+		-- Fork?
 		s = nextrandom(0, 2) < 1
 		if nextrandom(0, 15) < nextrandom(0, 1.5) then
 			start_corridor(wp, c, not s, psra)
@@ -179,6 +190,7 @@ function place_corridors(main_cave_coords, psra)
 	start_corridor(main_cave_coords, "x", xs, psra)
 	start_corridor(main_cave_coords, "z", zs, psra)
 	-- Auch mal die andere Richtung?
+	-- Try the other direction?
 	if nextrandom(0, 2) < 1 then
 		start_corridor(main_cave_coords, "x", not xs, psra)
 	end
@@ -194,8 +206,10 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	end
 	if maxp.y < 0  and nextrandom(0, 1) < probability_railcaves_in_chunk then
 		-- Mittelpunkt berechnen
+		-- Mid point of the chunk
 		local p = {x=minp.x+(maxp.x-minp.x)/2, y=minp.y+(maxp.y-minp.y)/2, z=minp.z+(maxp.z-minp.z)/2}
 		-- Haupthöhle und alle weiteren
+		-- Corridors; starting with main cave out of dirt
 		place_corridors(p, pr)
 	end
 end)
