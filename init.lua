@@ -10,7 +10,7 @@ local probability_torches_in_segment = 0.5
 
 -- Wahrsch. für jeden Teil eines Korridors, nach oben oder nach unten zu gehen
 -- Probability for every part of a corridor to go up or down
-local probability_up_or_down = 0.21
+local probability_up_or_down = 0.27
 
 -- Parameter Ende
 
