@@ -63,6 +63,8 @@ function corridor_part(start_point, segment_vector, segment_count)
 			local calc = {
 				p.x+dir[1], p.z+dir[2], -- X and Z, added by direction
 				p.x-dir[1], p.z-dir[2], -- subtracted
+				p.x+dir[2], p.z+dir[1], -- orthogonal
+				p.x-dir[2], p.z-dir[1], -- also orthogonal
 			}
 			minetest.set_node({x=p.x, y=p.y+1, z=p.z}, node_wood)
 			minetest.set_node({x=calc[1], y=p.y+1, z=calc[2]}, node_wood)
@@ -78,8 +80,8 @@ function corridor_part(start_point, segment_vector, segment_count)
 				minetest.set_node({x=calc[3], y=p.y-2, z=calc[4]}, node_fence)
 			end
 			if torches then
-				minetest.set_node({x=calc[1], y=p.y+1, z=calc[2]}, {name="default:torch", param2=1})
-				minetest.set_node({x=calc[3], y=p.y+1, z=calc[4]}, {name="default:torch", param2=1})
+				minetest.set_node({x=calc[5], y=p.y+1, z=calc[6]}, {name="default:torch", param2=1})
+				minetest.set_node({x=calc[7], y=p.y+1, z=calc[8]}, {name="default:torch", param2=1})
 			end
 		end
 		
