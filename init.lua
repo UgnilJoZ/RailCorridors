@@ -1,11 +1,21 @@
--- „Parameter“
+-- „Parameter“/„Settings“
+
 -- Wahrscheinlichkeit für jeden Chunk, solche Gänge mit Schienen zu bekommen
 -- Probability for every newly generated chunk to get corridors
 local probability_railcaves_in_chunk = 0.3
+
 -- Wahrsch. für jeden geraden Teil eines Korridors, Holzkonstruktionen ohne Fackeln zu bekommen
--- Probability for every part of a corridor to be without light
+-- Probability for every horizontal part of a corridor to be without light
 local probability_torches_in_segment = 0.5
 
+-- Wahrsch. für jeden Teil eines Korridors, nach oben oder nach unten zu gehen
+-- Probability for every part of a corridor to go up or down
+local probability_up_or_down = 0.21
+
+-- Parameter Ende
+
+
+-- Zufallsgenerator / random generator
 local pr
 local pr_initialized = false;
 
@@ -158,7 +168,7 @@ function start_corridor(waypoint, coord, sign, psra)
 	local up	
 	for i=1,nextrandom(2,10) do
 		-- Nach oben oder nach unten?
-		if nextrandom(0, 3) < 1 then
+		if nextrandom(0, 1) < probability_up_or_down then
 			ud = true
 			up = nextrandom(0, 2) < 1
 		else
@@ -213,4 +223,3 @@ minetest.register_on_generated(function(minp, maxp, seed)
 		place_corridors(p, pr)
 	end
 end)
-
