@@ -76,7 +76,7 @@ function corridor_part(start_point, segment_vector, segment_count)
 			minetest.set_node({x=calc[3], y=p.y+1, z=calc[4]}, node_wood)
 			minetest.set_node({x=calc[3], y=p.y  , z=calc[4]}, node_fence)
 			minetest.set_node({x=calc[3], y=p.y-1, z=calc[4]}, node_fence)
-			
+			 
 			if minetest.get_node({x=p.x,y=p.y-2,z=p.z}).name=="air" then
 				minetest.set_node({x=calc[1], y=p.y-2, z=calc[2]}, node_fence)
 				minetest.set_node({x=calc[3], y=p.y-2, z=calc[4]}, node_fence)
