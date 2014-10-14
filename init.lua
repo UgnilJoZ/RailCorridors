@@ -2,7 +2,7 @@
 
 -- Wahrscheinlichkeit für jeden Chunk, solche Gänge mit Schienen zu bekommen
 -- Probability for every newly generated chunk to get corridors
-local probability_railcaves_in_chunk = 1/3
+local probability_railcaves_in_chunk = 1/2
 
 -- Innerhalb welcher Parameter soll sich die Pfadlänge bewegen? (Forks heben den Maximalwert auf)
 -- Minimal and maximal value of path length (forks don't look up this value)
