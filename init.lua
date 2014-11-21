@@ -40,6 +40,10 @@ local name_torch = "default:torch"
 local node_water = {name="default:water_source"}
 local node_lava = {name="default:lava_source"}
 
+function nextrandom(min, max)
+	return pr:next() / 32767 * (max - min) + min
+end
+
 dofile(minetest.get_modpath("railcorridors").."/chests.lua")
 
 function Between(a,b)
@@ -56,10 +60,6 @@ end
 
 function vec3_mul(v,s)
 	return {x=s*v.x, y=s*v.y, z=s*v.z}
-end
-
-function nextrandom(min, max)
-	return pr:next() / 32767 * (max - min) + min
 end
 
 function MinMax(a,b)
@@ -334,7 +334,7 @@ end
 
 minetest.register_on_generated(function(minp, maxp, seed)
 	if not pr then
-		local pr = PseudoRandom(seed)
+		pr = PseudoRandom(seed)
 	end
 	if nextrandom(0,1) < probability_railcaves_in_chunk then
 		local mp
