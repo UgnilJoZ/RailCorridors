@@ -336,7 +336,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	if not pr then
 		pr = PseudoRandom(seed)
 	end
-	if nextrandom(0,1) < probability_railcaves_in_chunk then
+	if nextrandom(0,1) < probability_railcaves_in_chunk and maxp.y < 10 then
 		local mp
 		for i = 1,3 do
 			mp = {x=nextrandom(minp.x,maxp.x), y=nextrandom(minp.y,maxp.y), z=nextrandom(minp.z,maxp.z)}
